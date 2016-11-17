@@ -4,9 +4,13 @@ package com.example.keket.sunshine.app;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -35,6 +39,37 @@ public class ForecastFragment extends Fragment {
         // Required empty public constructor
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //In order for fragment to handle menu events
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.forecastfragment, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        //This method retrieves the ID of the item selected
+        //from the menu. so there is no need for assigning
+        //a variable really
+        int id = item.getItemId();
+
+        if(id == R.id.action_refresh){
+            //To do code here
+            FetchWeatherTask fetchWeatherTask = new FetchWeatherTask();
+            fetchWeatherTask.execute();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -65,6 +100,7 @@ public class ForecastFragment extends Fragment {
 
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
 
         //Get a reference to you list view
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
@@ -123,6 +159,7 @@ public class ForecastFragment extends Fragment {
                     return null;
                 }
                 forecastJsonStr = buffer.toString();
+                Log.v(LogTag, "Forecast JSONStr: " + forecastJsonStr);
             } catch (IOException e) {
                 Log.e(LogTag, "Error ", e);
                 // If the code didn't successfully get the weather data, there's no point in attemping
